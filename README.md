@@ -75,24 +75,21 @@ The conditional probability P(_w_|_l_), where _w_ represents some word token and
 One might consider estimating the value of P(_w_|_Sports_) by simply counting the number of _w_ tokens and dividing by the total number of word tokens in all news articles in the training set labeled as _Sports_, but this method is not good in general because of the “unseen event problem,” i.e., the possible presence of events in the test data that did _not_ occur at all in the training data. For example, in our classification task consider the word “foo.” Say “foo” does _not_ appear in our training data but _does_ occur in our test data. What probability would our classifier assign to P(_foo_|_Sports_) and P(_foo_|_Business_)? The probability would be 0, and because we are taking the sum of the logs of the conditional probabilities for each word and log 0 is undefined, the expression whose maximum we are computing would be undefined. This wouldn’t be a good classifier.
 
 What we do to get around this is we pretend we actually _did_ see some (possibly fractionally many) tokens of the word type “foo.” This goes by the name Laplace smoothing or add-δ smoothing, where δ is a parameter. We write:
-
 <div align= "center">
-<img src="./images/1.jpg" width = "300"/>
+<img src="./images/1.jpg" width = "270"/>
 </div>
 
 where _l_ ∈ {_Sports_, _Business_}, and _Cl_(_w_) is the number of times the token _w_ appears in news articles labeled _l_ in the training set. As above, |_V_| is the size of the total vocabulary we assume we will encounter (i.e., the dictionary size). Thus it forms a superset of the words used in the training and test sets. The value |_V_| will be passed to the train method of the classifier as the argument `int v`. This project uses the value δ = 0.00001.
 
 ## Log Probabilities 
 The second gotcha that any implementation of a Naive Bayes classifier must contend with is underflow. Underflow can occur when we take the product of a number of very small floating-point values. Fortunately, there is a workaround. Recall that a Naive Bayes classifier computes
-
 <div align= "center">
-<img src="./images/2.jpg"  width = "300"/>
+<img src="./images/2.jpg"  width = "310"/>
 </div>
 
 where _l_ ∈ {_Sports_, _Business_} and _wi_ is the _i_ th word token in a news article, numbered 1 to _k_. Because maximizing a formula is equivalent to maximizing the log value of that formula, _f_(_w_) computes the same class as
-
 <div align= "center">
-<img src="./images/3.jpg"  width = "300"/>
+<img src="./images/3.jpg"  width = "350"/>
 </div>
 
 What this means is that the program should compute the _g_(_w_) formulation of the function above rather than the _f_(_w_) formulation. Methods `p_l` and `p_w_given_l` return the true probabilities themselves and __NOT__ the logs of the probabilities.
